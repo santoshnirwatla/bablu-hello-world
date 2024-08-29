@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    environment {
+        VM_USER = 'santoshn92'  // e.g., 'gcp-user'
+        VM_IP = '34.93.64.40'       // replace with your VM's IP
+        SSH_CREDENTIALS_ID = 'gcp-key'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git clone https://santoshn92-admin@bitbucket.org/santoshn92/bablu-hello-world.git
+            }
+        }
+
+        stage('Package Application') {
+            steps {
+                sh "tar czf app.tar.gz *"
+            }
+        }
+
+        stage('Deploy to VM') {
+            steps {
+                script {
+                    sshPublisher(
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'gcp-vm-ssh', 
+                                transfers: [
+                                    sshTransfer(
+                                        sourceFiles: 'app.tar.gz', 
+                                        removePrefix: '',
+                                        remoteDirectory: '/home/${VM_USER}/app',
+                                        execCommand: '''
+                                            cd /home/${VM_USER}/app &&
+                                            tar xzf app.tar.gz &&
+                                            pip3 install -r requirements.txt &&
+                                            nohup python3 app.py > app.log 2>&1 &
+                                        ''',
+                                        execTimeout: 120000
+                                    )
+                                ],
+                                verbose: true
+                            )
+                        ]
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
