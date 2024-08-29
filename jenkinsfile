@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git clone https://santoshn92-admin@bitbucket.org/santoshn92/bablu-hello-world.git
+                git 'https://github.com/santoshnirwatla/bablu-hello-world.git'
             }
         }
 
