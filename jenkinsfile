@@ -1,37 +1,34 @@
 pipeline {
     agent any
-
+    environment {
+        GCP_VM_CREDENTIALS = credentials('gcp-ssh-credentials-id') // Replace with your SSH credentials ID
+    }
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/santoshnirwatla/bablu-hello-world.git'
+                // Cloning the repository with the "Hello World" app
+                git 'https://github.com/your-repo/hello-world.git'
             }
         }
-
-        stage('Install Dependencies') {
-            steps {
-                // Example for a Python Flask app
-                sh 'pip3 install -r requirements.txt'
-            }
-        }
-
         stage('Deploy to GCP VM') {
             steps {
-                sshagent (credentials: ['gcp-key1']) {
-                    sh '''
-                    scp -o StrictHostKeyChecking=no -r * <ubuntu>@<34.93.95.186>:/home/<ubuntu>/app
-                    ssh <ubuntu>@<34.93.95.186> "cd /home/<ubuntu M6
-                    +-30
-                ][>/app && nohup python3 app.py > app.log 2>&1 &"
-                    '''
+                // Deploy the app to the GCP VM using SSH
+                sshagent (credentials: ['gcp-ssh-credentials-id']) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no user@GCP_VM_IP 'mkdir -p ~/deploy/hello-world'
+                    scp -o StrictHostKeyChecking=no hello.py user@GCP_VM_IP:~/deploy/hello-world
+                    ssh -o StrictHostKeyChecking=no user@GCP_VM_IP 'python3 ~/deploy/hello-world/hello.py'
+                    """
                 }
             }
         }
     }
-
     post {
         success {
-            echo 'Hello World app successfully deployed!'
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed!'
         }
     }
 }
