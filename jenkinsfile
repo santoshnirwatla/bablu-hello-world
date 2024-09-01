@@ -20,7 +20,9 @@ pipeline {
                 sshagent (credentials: ['gcp-key1']) {
                     sh '''
                     scp -o StrictHostKeyChecking=no -r * <ubuntu>@<34.93.95.186>:/home/<ubuntu>/app
-                    ssh <ubuntu>@<34.93.95.186> "cd /home/<ubuntu>/app && nohup python3 app.py > app.log 2>&1 &"
+                    ssh <ubuntu>@<34.93.95.186> "cd /home/<ubuntu M6
+                    +-30
+                ][>/app && nohup python3 app.py > app.log 2>&1 &"
                     '''
                 }
             }
