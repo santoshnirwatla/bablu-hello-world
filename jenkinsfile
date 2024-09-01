@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        GCP_VM_CREDENTIALS = credentials('gcp-ssh-credentials-id') // Replace with your SSH credentials ID
+        GCP_VM_CREDENTIALS = credentials('gcp-key') // Replace with your SSH credentials ID
     }
     stages {
         stage('Clone Repository') {
@@ -13,11 +13,11 @@ pipeline {
         stage('Deploy to GCP VM') {
             steps {
                 // Deploy the app to the GCP VM using SSH
-                sshagent (credentials: ['gcp-ssh-credentials-id']) {
+                sshagent (credentials: ['gcp-key']) {
                     sh """
-                    ssh -o StrictHostKeyChecking=no user@GCP_VM_IP 'mkdir -p ~/deploy/hello-world'
-                    scp -o StrictHostKeyChecking=no hello.py user@GCP_VM_IP:~/deploy/hello-world
-                    ssh -o StrictHostKeyChecking=no user@GCP_VM_IP 'python3 ~/deploy/hello-world/hello.py'
+                    ssh -o StrictHostKeyChecking=no santoshn92@34.100.175.208 'mkdir -p ~/deploy/hello-world'
+                    scp -o StrictHostKeyChecking=no hello.py user@34.100.175.208:~/deploy/hello-world
+                    ssh -o StrictHostKeyChecking=no santoshn92@34.100.175.208 'python3 ~/deploy/hello-world/hello.py'
                     """
                 }
             }
