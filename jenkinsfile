@@ -1,34 +1,38 @@
-pipeline {
-    agent any
-    environment {
-        GCP_VM_CREDENTIALS = credentials('gcp-key') // Replace with your SSH credentials ID
+pipeline{
+  agent any
+
+  stages{
+    stage("parallel stage"){
+      parallel{
+        stage("one"){
+          steps{
+            sh """
+            echo "one"
+            """
+          }
+        }
+        stage("two"){
+          steps{
+            sh """
+            echo "two"
+            """
+          }
+        }
+        stage("third"){
+          steps{
+            sh """
+            echo "third"
+            """
+          }
+        }
+      }
     }
-    stages {
-        stage('Clone Repository') {
-            steps {
-                // Cloning the repository with the "Hello World" app
-                git 'https://github.com/your-repo/hello-world.git'
-            }
-        }
-        stage('Deploy to GCP VM') {
-            steps {
-                // Deploy the app to the GCP VM using SSH
-                sshagent (credentials: ['gcp-key']) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no santoshn92@34.100.175.208 'mkdir -p ~/deploy/hello-world'
-                    scp -o StrictHostKeyChecking=no hello.py user@34.100.175.208:~/deploy/hello-world
-                    ssh -o StrictHostKeyChecking=no santoshn92@34.100.175.208 'python3 ~/deploy/hello-world/hello.py'
-                    """
-                }
-            }
-        }
+    stage("squentail"){
+      steps{
+         sh """
+          echo "sequentaails"
+         """
+      }
     }
-    post {
-        success {
-            echo 'Deployment successful!'
-        }
-        failure {
-            echo 'Deployment failed!'
-        }
-    }
+  }
 }
